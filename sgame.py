@@ -8,8 +8,10 @@ win = tk.Tk()
 win.title("Sgame")
 frmGame = tk.Frame(win)
 frmGame.grid(column=0, row=0)
+frmMsg = tk.Frame(win)
+frmMsg.grid(column=0, row=1)
 frmCtrl = tk.Frame(win)
-frmCtrl.grid(column=0, row=1)
+frmCtrl.grid(column=0, row=2)
 
 		
 click_counts = 0
@@ -35,7 +37,7 @@ def click_counter(count):
 	global click_counts
 	if count == 0: click_counts =0
 	else: click_counts += count
-	lblStart.configure(text='Number of clicks :' + str(click_counts))
+	lblStart.configure(text='Number of clicks : ' + str(click_counts), justify='center')
 	
 def btn_label(x):
 	print('In btn_label', control)
@@ -130,7 +132,7 @@ btnReset.grid(column=2, row=1)
 btnReset = ttk.Button(frmCtrl, text='About', command=game_about)
 btnReset.grid(column=1, row=1)
 
-lblStart = ttk.Label(frmCtrl, text="")
+lblStart = ttk.Label(frmMsg, text="")
 lblStart.grid(column=0, row=0)
 
 win.mainloop()
