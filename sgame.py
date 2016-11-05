@@ -1,17 +1,20 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox as mBox
+from tkinter import Menu
 import random
 import sgameDll as dll
 
 win = tk.Tk()
 win.title("Sgame")
+##Frames
 frmGame = tk.Frame(win)
 frmGame.grid(column=0, row=0)
 frmMsg = tk.Frame(win)
 frmMsg.grid(column=0, row=1)
 frmCtrl = tk.Frame(win)
 frmCtrl.grid(column=0, row=2)
+
 
 		
 click_counts = 0
@@ -102,6 +105,8 @@ def move_key(key):
 			return
 			
 def game_exit():
+	win.quit()
+	win.destroy()
 	exit()
 
 def game_about():
@@ -112,6 +117,7 @@ def game_about():
 btnArr = []
 for cntr in range(9):
 	btnArr.append(ttk.Button(frmGame, text=str(btn_label(cntr)), command=lambda keynum=cntr:clickMe(keynum)))
+	btnArr[cntr].height = 2111
 	btnArr[cntr].grid(row=(cntr//3),column=(cntr%3))
 
 
@@ -124,6 +130,17 @@ btnReset.grid(column=1, row=1)
 
 lblStart = ttk.Label(frmMsg, text="")
 lblStart.grid(column=0, row=0)
+## Menus
+menuBar = Menu(win) 
+win.config(menu=menuBar)
+fileMenu = Menu(menuBar, tearoff=0) # 1
+fileMenu.add_command(label="Exit", command=game_exit)
+menuBar.add_cascade(label="File", menu=fileMenu)
+helpMenu = Menu(menuBar, tearoff=0) # 2
+helpMenu.add_command(label="Info",command=game_about)
+fileMenu.add_separator() 
+helpMenu.add_command(label="About",command=game_about)
+menuBar.add_cascade(label="Help", menu=helpMenu)
 
 win.mainloop()
 
