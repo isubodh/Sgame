@@ -24,10 +24,9 @@ for var in range(9):
 		else:
 			place +=1
 	control[place] = var
-print('After Start',control)
+
 	
 def clickMe(keynum):
-	print('In clickMe', keynum, control)
 	click_counter(1)
 	move_key(keynum)
 	btnReLabel()
@@ -40,14 +39,12 @@ def click_counter(count):
 	lblStart.configure(text='Number of clicks : ' + str(click_counts), justify='center')
 	
 def btn_label(x):
-	print('In btn_label', control)
 	if control[x] != 0 :
 		return str(control[x])
 	else:
 		return str('')
 
 def btnReLabel():
-	print('In btnReLabel', control)
 	for var in range(9):
 		if control[var] != 0:
 			btnArr[var].configure(text=str(control[var]))
@@ -58,7 +55,6 @@ def btnReLabel():
 
 def verify():
 	global click_counts
-	print('In verify', control)
 	for var in range(9):
 		if var != control[var]:
 			return
@@ -66,7 +62,6 @@ def verify():
 
 def game_reset():
 	click_counter(0)
-	print('In game_reset', control)
 	global control
 	control = [-1 for x in range(9)]
 	for var in range(9):
@@ -81,34 +76,29 @@ def game_reset():
 
 def move_key(key):
 	global control
-	print('In move_key', key, control)
 	## Check Right
 	if key%3 != 2:
 		if control[key +1] == 0:
 			control[key+1] = control[key]
 			control[key]=0
-			print('Right move', key, control)
 			return
 	## Check Left
 	if key%3 != 0:
 		if control[key -1] == 0:
 			control[key-1] = control[key]
 			control[key]=0
-			print('Left move', key, control)
 			return
 	## check Down
 	if key//3 != 2:
 		if control[key + 3] == 0:
 			control[key+3] = control[key]
 			control[key]=0	
-			print('Down move', key, control)
 			return
 	## check Up
 	if key//3 != 0:
 		if control[key - 3] == 0:
 			control[key-3] = control[key]
 			control[key]=0	
-			print('Up move', key, control)
 			return
 			
 def game_exit():
