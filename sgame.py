@@ -1,146 +1,159 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox as mBox
-from tkinter import Menu
+from tkinter import ttk, Menu , messagebox as mBox
 import random
-import sgameDll as dll
+
+class SgameGUI:
+	def __init__(self, win):
+		self.win = win
+		win.title("Sgame")
+		
+		self.frmGame = tk.Frame(win)
+		self.frmGame.grid(column=0, row=0)
+		self.frmMsg = tk.Frame(win)
+		self.frmMsg.grid(column=0, row=1)
+		self.frmCtrl = tk.Frame(win)
+		self.frmCtrl.grid(column=0, row=2)
+		
+		self.click_counts = 0
+		self.control = [-1 for x in range(9)]
+		for var in range(9):
+			place = random.randint(0,8)
+			while self.control[place] != -1:
+				if place == 8:
+					place = 0
+				else:
+					place +=1
+			self.control[place] = var
+			
+		self.btnArr = []
+		for cntr in range(9):
+			self.btnArr.append(ttk.Button(self.frmGame,
+									text=str(self.btn_label(cntr)), 
+									command=lambda keynum=cntr:self.clickMe(keynum)))
+			self.btnArr[cntr].height = 2111
+			self.btnArr[cntr].grid(row=(cntr//3),column=(cntr%3))
+	
+		self.btnReset = ttk.Button(self.frmCtrl, text='Reset', command=self.game_reset)
+		self.btnReset.grid(column=0, row=1)
+		self.btnReset = ttk.Button(self.frmCtrl, text='Exit', command=self.game_exit)
+		self.btnReset.grid(column=2, row=1)
+		self.btnReset = ttk.Button(self.frmCtrl, text='About', command=self.game_about)
+		self.btnReset.grid(column=1, row=1)
+		
+		self.lblStart = ttk.Label(self.frmMsg, text="")
+		self.lblStart.grid(column=0, row=0)
+		## Menus
+		self.menuBar = Menu(win) 
+		win.config(menu=self.menuBar)
+		self.fileMenu = Menu(self.menuBar, tearoff=0) # 1
+		self.fileMenu.add_command(label="Exit", command=self.game_exit)
+		self.menuBar.add_cascade(label="File", menu=self.fileMenu)
+		self.helpMenu = Menu(self.menuBar, tearoff=0) # 2
+		self.helpMenu.add_command(label="Info",command=self.game_about)
+		self.fileMenu.add_separator() 
+		self.helpMenu.add_command(label="About",command=self.game_about)
+		self.menuBar.add_cascade(label="Help", menu=self.helpMenu)
+	
+	def game_about(self):
+		message = 'Sgame from Subodh' + '\n'
+		message += 'isubodh@gmail.com'
+		mBox.showinfo('Abt', message) 
+
+	def clickMe(self,keynum):
+		self.click_counter(1)
+		self.move_key(keynum)
+		self.btnReLabel()
+		self.verify()
+		
+	def click_counter(self,count):
+		if count == 0: self.click_counts =0
+		else: self.click_counts += count
+		self.lblStart.configure(text='Number of clicks : ' + str(self.click_counts), justify='center')
+		
+	def btn_label(self,x):
+		if self.control[x] != 0 :
+			return str(self.control[x])
+		else:
+			return str('')
+			
+	def btnReLabel(self):
+		for var in range(9):
+			if self.control[var] != 0:
+				self.btnArr[var].configure(text=str(self.control[var]))
+				self.btnArr[var].state = 'NORMAL'
+			else:
+				self.btnArr[var].configure(text=str(''))
+				self.btnArr[var].state = 'DISABLED'
+
+	def verify(self):
+		#global click_counts
+		for var in range(9):
+			if var != self.control[var]:
+				return
+		mBox.showinfo('Winner','Hey !congrats U Won in '+self.click_counts+' cliks') 
+		
+	def game_reset(self):
+		self.click_counter(0)
+		#global control
+		self.control = [-1 for x in range(9)]
+		for var in range(9):
+			place = random.randint(0,8)
+			while self.control[place] != -1:
+				if place == 8:
+					place = 0
+				else:
+					place +=1
+			self.control[place] = var
+		self.btnReLabel()
+		
+	def move_key(self,key):
+		#global control
+		## Check Right
+		if key%3 != 2:
+			if self.control[key +1] == 0:
+				self.control[key+1] = self.control[key]
+				self.control[key]=0
+				return
+		## Check Left
+		if key%3 != 0:
+			if self.control[key -1] == 0:
+				self.control[key-1] = self.control[key]
+				self.control[key]=0
+				return
+		## check Down
+		if key//3 != 2:
+			if self.control[key + 3] == 0:
+				self.control[key+3] = self.control[key]
+				self.control[key]=0	
+				return
+		## check Up
+		if key//3 != 0:
+			if self.control[key - 3] == 0:
+				self.control[key-3] = self.control[key]
+				self.control[key]=0	
+				return
+					
+	def game_exit(self):
+		self.win.quit()
+		self.win.destroy()
+		exit()
 
 win = tk.Tk()
-win.title("Sgame")
-##Frames
-frmGame = tk.Frame(win)
-frmGame.grid(column=0, row=0)
-frmMsg = tk.Frame(win)
-frmMsg.grid(column=0, row=1)
-frmCtrl = tk.Frame(win)
-frmCtrl.grid(column=0, row=2)
-
-
-		
-click_counts = 0
-control = [-1 for x in range(9)]
-for var in range(9):
-	place = random.randint(0,8)
-	while control[place] != -1:
-		if place == 8:
-			place = 0
-		else:
-			place +=1
-	control[place] = var
-
-	
-def clickMe(keynum):
-	click_counter(1)
-	move_key(keynum)
-	btnReLabel()
-	verify()
-
-def click_counter(count):
-	global click_counts
-	if count == 0: click_counts =0
-	else: click_counts += count
-	lblStart.configure(text='Number of clicks : ' + str(click_counts), justify='center')
-	
-def btn_label(x):
-	if control[x] != 0 :
-		return str(control[x])
-	else:
-		return str('')
-
-def btnReLabel():
-	for var in range(9):
-		if control[var] != 0:
-			btnArr[var].configure(text=str(control[var]))
-			btnArr[var].state = 'NORMAL'
-		else:
-			btnArr[var].configure(text=str(''))
-			btnArr[var].state = 'DISABLED'
-
-def verify():
-	global click_counts
-	for var in range(9):
-		if var != control[var]:
-			return
-	mBox.showinfo('Winner','Hey !congrats U Won in '+click_counts+' cliks') 
-
-def game_reset():
-	click_counter(0)
-	global control
-	control = [-1 for x in range(9)]
-	for var in range(9):
-		place = random.randint(0,8)
-		while control[place] != -1:
-			if place == 8:
-				place = 0
-			else:
-				place +=1
-		control[place] = var
-	btnReLabel()
-
-def move_key(key):
-	global control
-	## Check Right
-	if key%3 != 2:
-		if control[key +1] == 0:
-			control[key+1] = control[key]
-			control[key]=0
-			return
-	## Check Left
-	if key%3 != 0:
-		if control[key -1] == 0:
-			control[key-1] = control[key]
-			control[key]=0
-			return
-	## check Down
-	if key//3 != 2:
-		if control[key + 3] == 0:
-			control[key+3] = control[key]
-			control[key]=0	
-			return
-	## check Up
-	if key//3 != 0:
-		if control[key - 3] == 0:
-			control[key-3] = control[key]
-			control[key]=0	
-			return
-			
-def game_exit():
-	win.quit()
-	win.destroy()
-	exit()
-
-def game_about():
-	message = 'Sgame from Subodh' + '\n'
-	message += 'isubodh@gmail.com'
-	mBox.showinfo('Abt', message) 
-	
-btnArr = []
-for cntr in range(9):
-	btnArr.append(ttk.Button(frmGame, text=str(btn_label(cntr)), command=lambda keynum=cntr:clickMe(keynum)))
-	btnArr[cntr].height = 2111
-	btnArr[cntr].grid(row=(cntr//3),column=(cntr%3))
-
-
-btnReset = ttk.Button(frmCtrl, text='Reset', command=game_reset)
-btnReset.grid(column=0, row=1)
-btnReset = ttk.Button(frmCtrl, text='Exit', command=game_exit)
-btnReset.grid(column=2, row=1)
-btnReset = ttk.Button(frmCtrl, text='About', command=game_about)
-btnReset.grid(column=1, row=1)
-
-lblStart = ttk.Label(frmMsg, text="")
-lblStart.grid(column=0, row=0)
-## Menus
-menuBar = Menu(win) 
-win.config(menu=menuBar)
-fileMenu = Menu(menuBar, tearoff=0) # 1
-fileMenu.add_command(label="Exit", command=game_exit)
-menuBar.add_cascade(label="File", menu=fileMenu)
-helpMenu = Menu(menuBar, tearoff=0) # 2
-helpMenu.add_command(label="Info",command=game_about)
-fileMenu.add_separator() 
-helpMenu.add_command(label="About",command=game_about)
-menuBar.add_cascade(label="Help", menu=helpMenu)
-
+mySgame = SgameGUI(win)
 win.mainloop()
+		
+
+
+	
+
+
+
+
+
+	
+
+
+
+
+
 
