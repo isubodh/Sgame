@@ -188,8 +188,11 @@ class SgameGUI:
 		self.win.destroy()
 		exit()
 
+#===========================================================================
+# Main where the action starts.
+#===========================================================================	
 win = tk.Tk()
-mySgame = SgameGUI(win)
+SgameGUI(win)
 win.mainloop()
 		
 
